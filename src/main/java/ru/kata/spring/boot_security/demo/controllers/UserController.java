@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
@@ -28,10 +27,30 @@ public class UserController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @GetMapping("/admin") //for admin only
-    public String getAdminHomePage(Model model) {
+    @GetMapping("/admin")
+    public String getAdminHomePage(@ModelAttribute("user") User user, Model model, Principal principal) {
         model.addAttribute("users", userService.listUsers());
+        model.addAttribute("current_user", userService.findByUsername(principal.getName()));
+        model.addAttribute("allRoles", roleService.listRoles());
         return "admin";
+    }
+
+    @PostMapping("/new")
+    public String createUser(@ModelAttribute("user") User user) {
+        userService.saveUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/edit")
+    public String editUser(@ModelAttribute("user") User user) {
+        userService.updateUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/delete") // admin only
+    public String deleteUser(@ModelAttribute("user") User user) {
+        userService.deleteUser(user.getId());
+        return "redirect:/admin";
     }
 
     @GetMapping("/user") //for users
@@ -39,35 +58,5 @@ public class UserController {
         User user = userService.findByUsername(principal.getName());
         model.addAttribute("user", user);
         return "user_page";
-    }
-
-    @GetMapping("/edituser")
-    public String showUser(@RequestParam(value = "id") long id, Model model) {
-        model.addAttribute("user", userService.getUser(id));
-        return "edit";
-    }
-
-    @GetMapping("/new") //admin only
-    public String newUser(@ModelAttribute("user") User user, Model model) {
-        model.addAttribute("allRoles", roleService.listRoles());
-        return "new";
-    }
-
-    @PostMapping("/new") //admin only
-    public String createUser(@ModelAttribute("user") User user) {
-        userService.saveUser(user);
-        return "redirect:/admin";
-    }
-
-    @PostMapping("/delete") // admin only
-    public String deleteUser(@RequestParam("id") long id) {
-        userService.deleteUser(id);
-        return "redirect:/admin";
-    }
-
-    @PostMapping("/edit")
-    public String editUser(@RequestParam("id") long id) {
-        userService.updateUser(userService.getUser(id));
-        return "redirect:/admin";
     }
 }

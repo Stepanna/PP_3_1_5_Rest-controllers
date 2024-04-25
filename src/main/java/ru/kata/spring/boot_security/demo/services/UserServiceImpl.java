@@ -71,6 +71,7 @@ public class UserServiceImpl  implements UserService {
     @Transactional
     public void updateUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setLastName(user.getLastName());
         userRepository.save(user);
     }
 
