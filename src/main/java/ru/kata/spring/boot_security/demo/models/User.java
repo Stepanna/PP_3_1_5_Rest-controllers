@@ -1,6 +1,7 @@
-package com.example.PP_3_1_2_Spring_Boot.model;
+package ru.kata.spring.boot_security.demo.models;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users")
@@ -9,6 +10,12 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "username")
+    private String username; // TODO
+
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "name")
     private String name;
@@ -19,14 +26,23 @@ public class User {
     @Column(name = "age")
     private Byte age;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
+
     public User() {
 
     }
 
-    public User(String name, String lastName, Byte age) {
+    public User(String username, String password, String name, String lastName, Byte age, Collection<Role> roles) {
+        this.username = username;
+        this.password = password;
         this.name = name;
         this.lastName = lastName;
         this.age = age;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -69,5 +85,29 @@ public class User {
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }

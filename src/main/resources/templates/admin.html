@@ -14,17 +14,21 @@
         <thead>
         <tr>
             <th>ID</th>
+            <th>Username</th>
             <th>Name</th>
             <th>Last Name</th>
             <th>Age</th>
+            <th>Roles</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="user : ${users}">
             <th th:text="${user.getId()}"/>
+            <th th:text="${user.getUsername()}"/>
             <th th:text="${user.getName()}"/>
             <th th:text="${user.getLastName()}"/>
             <th th:text="${user.getAge()}"/>
+            <th th:text="${user.getRoles()}"/>
             <th><a th:href="@{edituser(id=${user.getId()})}">Edit user</p></a></th>
 
             <th>
@@ -36,6 +40,7 @@
         </tr>
         </tbody>
     </table>
+    <a href="/logout">Logout</a>
 </div>
 </body>
 </html>

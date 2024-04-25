@@ -11,6 +11,14 @@
     <form th:method="POST" th:action="@{/new}" th:object="${user}">
         <table>
             <tr>
+                <td>Username</td>
+                <td><input type="text" name="username" th:field="*{username}"></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" name="password" th:field="*{password}"></td>
+            </tr>
+            <tr>
                 <td>Name</td>
                 <td><input type="text" name="name" th:field="*{name}"></td>
             </tr>
@@ -24,10 +32,21 @@
             </tr>
         </table>
         <br>
+        <label for="roles">Role: </label>
+        <input type="checkbox" name="roles" id="roles"
+               th:each="role : ${allRoles}"
+               th:text="${role.name}"
+               th:value="${role.id}"
+               th:field="*{roles}"
+        />
+        <br>
+        <br>
         <input type="submit" value="Create user">
         <br>
-        <a href="/home">Home Page</a>
     </form>
+    <a href="/home">Home Page</a>
+    <br>
+    <a href="/logout">Logout</a>
 </div>
 
 </body>

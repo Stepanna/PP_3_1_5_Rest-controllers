@@ -12,6 +12,14 @@
     <form th:action="@{/edit?id={id}(id=${user.getId})}" th:object="${user}" method="POST">
         <table>
             <tr>
+                <td>Username</td>
+                <td><input type="text" name="username" th:field="*{username}"></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" name="password" th:field="*{password}"></td>
+            </tr>
+            <tr>
                 <td>Name</td>
                 <td><input type="text" name="name" th:field="*{name}"></td>
             </tr>
@@ -24,11 +32,19 @@
                 <td><input type="number" name="age" th:field="*{age}"></td>
             </tr>
         </table>
+        <label for="roles">Role: </label>
+        <input type="checkbox" name="roles" id="roles"
+               th:each="role : ${allRoles}"
+               th:text="${role.name}"
+               th:value="${role.id}"
+               th:field="*{roles}"
+        />
         <br>
         <input type="submit" value="Update">
     </form>
     <br>
     <a href="/home">Home Page</a>
+    <a href="/logout">Logout</a>
 </div>
 </body>
 </html>
