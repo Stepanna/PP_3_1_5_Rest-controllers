@@ -18,17 +18,8 @@
     <link href="/docs/4.6/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 
-
-    <!-- Favicons -->
-    <link rel="apple-touch-icon" href="/docs/4.6/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="/docs/4.6/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/docs/4.6/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="manifest" href="/docs/4.6/assets/img/favicons/manifest.json">
-    <link rel="mask-icon" href="/docs/4.6/assets/img/favicons/safari-pinned-tab.svg" color="#563d7c">
-    <link rel="icon" href="/docs/4.6/assets/img/favicons/favicon.ico">
-    <meta name="msapplication-config" content="/docs/4.6/assets/img/favicons/browserconfig.xml">
-    <meta name="theme-color" content="#563d7c">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/main.js"></script>
 
     <style>
         span {
@@ -53,12 +44,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
           <span class="navbar-text text-white me-3">
-            <i class="fas fa-user"></i>
-              <strong><span th:text="${user.getUsername()}"></span></strong>
-              <span> with roles: </span>
-            <span th:each="role : ${user.getRoles()}">
-              <span th:text="${role.name.substring(5, role.name.length())}"></span>
-            </span>
+              <strong><span id="current-user-name"></span></strong>  with roles: <span id="current-user-roles"></span>
           </span>
                     </li>
                 </ul>
@@ -115,16 +101,7 @@
                                     <th>Roles</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr th:object="${user}">
-                                    <td th:text="${user.getId()}"/>
-                                    <td th:text="${user.getUsername()}"/>
-                                    <td th:text="${user.getName()}"/>
-                                    <td th:text="${user.getLastName()}"/>
-                                    <td th:text="${user.getAge()}"/>
-                                    <td th:each="role : ${user.getRoles()}"
-                                        th:text="${role.name.substring(5, role.name.length()) + ' '}"/>
-                                </tr>
+                                <tbody id="current-user">
                                 </tbody>
                             </table>
                         </div>

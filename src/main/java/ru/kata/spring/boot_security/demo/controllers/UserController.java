@@ -1,19 +1,20 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
+import java.util.List;
 
-@Controller
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -27,36 +28,74 @@ public class UserController {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @GetMapping("/admin")
-    public String getAdminHomePage(@ModelAttribute("user") User user, Model model, Principal principal) {
-        model.addAttribute("users", userService.listUsers());
-        model.addAttribute("current_user", userService.findByUsername(principal.getName()));
-        model.addAttribute("allRoles", roleService.listRoles());
-        return "admin";
+    @GetMapping("/list_users")
+    public ResponseEntity<?> getUsersList(/*@ModelAttribute("user") User user*/) {
+        try {
+            List<User> users = userService.listUsers();
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/list_roles")
+    public ResponseEntity<?> getRolesList() {
+        try {
+            List<Role> roles = roleService.listRoles();
+            return new ResponseEntity<>(roles, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/new")
-    public String createUser(@ModelAttribute("user") User user) {
-        userService.saveUser(user);
-        return "redirect:/admin";
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        try {
+            userService.saveUser(user);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
-    @PostMapping("/edit")
-    public String editUser(@ModelAttribute("user") User user) {
-        userService.updateUser(user);
-        return "redirect:/admin";
+    @PatchMapping("/edit/{id}")
+    public ResponseEntity<?> editUser(@PathVariable Long id, @RequestBody User user) {
+        try {
+            user.setId(id);
+            userService.updateUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
-    @PostMapping("/delete") // admin only
-    public String deleteUser(@ModelAttribute("user") User user) {
-        userService.deleteUser(user.getId());
-        return "redirect:/admin";
+    @DeleteMapping("/delete/{id}") // admin only
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+        try {
+            userService.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
-    @GetMapping("/user") //for users
-    public String showUser(Model model, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
-        model.addAttribute("user", user);
-        return "user_page";
+    @GetMapping("/current_user") //for users
+    public ResponseEntity<?> getCurrentUser(Model model, Principal principal) {
+        try {
+            User user = userService.findByUsername(principal.getName());
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserInfo(@PathVariable("id") Long id){
+        try {
+            User user = userService.getUser(id);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
