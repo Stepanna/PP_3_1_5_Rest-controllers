@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -61,9 +63,13 @@ public class UserController {
     @PatchMapping("/edit/{id}")
     public ResponseEntity<?> editUser(@PathVariable Long id, @RequestBody User user) {
         try {
-            user.setId(id);
-            userService.updateUser(user);
-            return new ResponseEntity<>(HttpStatus.OK);
+            Optional<User> optionalUser = Optional.ofNullable(userService.getUser(id));
+            if (optionalUser.isPresent()) {
+                userService.updateUser(user);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                throw new UsernameNotFoundException("User not found with id: " + id);
+            }
         } catch (Exception e){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -72,8 +78,13 @@ public class UserController {
     @DeleteMapping("/delete/{id}") // admin only
     public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         try {
-            userService.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            Optional<User> optionalUser = Optional.ofNullable(userService.getUser(id));
+            if (optionalUser.isPresent()) {
+                userService.deleteUser(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                throw new UsernameNotFoundException("User not found with id: " + id);
+            }
         } catch (Exception e){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -92,8 +103,12 @@ public class UserController {
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserInfo(@PathVariable("id") Long id){
         try {
-            User user = userService.getUser(id);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            Optional<User> optionalUser = Optional.ofNullable(userService.getUser(id));
+            if (optionalUser.isPresent()) {
+                return new ResponseEntity<>(optionalUser.get(), HttpStatus.OK);
+            } else {
+                throw new UsernameNotFoundException("User not found with id: " + id);
+            }
         } catch (Exception e){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
